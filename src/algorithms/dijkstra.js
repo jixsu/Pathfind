@@ -121,7 +121,7 @@ export function dijkstra(grid) {
     dijkstraGrid[currentNode.location.row][
       currentNode.location.column
     ] = currentNode;
-    visitedNodes.push(currentNode);
+    visitedNodes.push([currentNode]);
   }
 
   // const startNode = findStart(dijkstraGrid);
@@ -131,12 +131,12 @@ export function dijkstra(grid) {
   let shortestPath = [];
 
   while (!currentNode.isStart) {
-    shortestPath.push({ id: currentNode.id });
+    shortestPath.unshift([{ id: currentNode.id }]);
     currentNode = currentNode.prevNode;
   }
 
-  console.log(shortestPath);
-  console.log(visitedNodes);
+  // console.log(shortestPath);
+  // console.log(visitedNodes);
 
   const data = {
     shortestPath: shortestPath,
@@ -144,22 +144,4 @@ export function dijkstra(grid) {
   };
 
   return data;
-}
-
-export function animateDijkstra(visitedNodes) {
-  for (let n = 0; n < visitedNodes.length; n++) {
-    setTimeout(() => {
-      const node = visitedNodes[n];
-      document.getElementById(node.id).className = "node visited";
-    }, 10 * n);
-  }
-}
-
-export function animateShortestPath(shortestPath) {
-  for (let n = shortestPath.length - 1; n >= 0; n++) {
-    setTimeout(() => {
-      const node = shortestPath[n];
-      document.getElementById(node.id).className = "node shortest-path";
-    }, 10 * n);
-  }
 }

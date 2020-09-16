@@ -4,11 +4,11 @@
 }
 
 .default {
-  border: 1px solid rgb(204, 153, 255);
+  border: 1px solid #c4a7d7;
 }
 
 .start {
-  background-color: purple;
+  background-color: yellow;
 }
 
 .end {
@@ -16,9 +16,10 @@
 }
 
 .visited {
-  background-color: blue;
+  background-color: #c4a7d7;
+  border: 1px solid white;
 }
 
 .shortest-path {
-  background-color: pink;
+  background-color: yellow;
 }
