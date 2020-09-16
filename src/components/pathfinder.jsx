@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import Controlbar from "./controlbar";
 import Node from "./node";
-import { dijkstra } from "./../algorithms/dijkstra";
+import {
+  dijkstra,
+  animateDijkstra,
+  animateShortestPath,
+} from "./../algorithms/dijkstra";
 import "../css/pathfinder.css";
 
 class Pathfinder extends Component {
@@ -12,8 +16,8 @@ class Pathfinder extends Component {
       column: 20,
     },
     end: {
-      row: 0,
-      column: 59,
+      row: 10,
+      column: 40,
     },
     algorithm: "dijkstra",
   };
@@ -93,10 +97,17 @@ class Pathfinder extends Component {
     });
   };
 
+  // handleReset = () => {
+  //   const grid = this.generateGrid(this.dimensions);
+  //   this.setState({ grid });
+  // };
+
   handleVisualize = () => {
     const { grid, algorithm } = this.state;
     if (algorithm === "dijkstra") {
-      return dijkstra(grid);
+      const { shortestPath, visitedNodes } = dijkstra(grid);
+      animateDijkstra(visitedNodes);
+      // await animateShortestPath(shortestPath);
     }
   };
 
@@ -105,7 +116,7 @@ class Pathfinder extends Component {
     return (
       <React.Fragment>
         <Controlbar onVisualize={this.handleVisualize} />
-        <div>{this.renderContainer(grid)}</div>;
+        <div>{this.renderContainer(grid)}</div>
       </React.Fragment>
     );
   }
