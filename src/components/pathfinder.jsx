@@ -120,7 +120,9 @@ class Pathfinder extends Component {
     let aIndex = algorithmIndex;
     let aStateChecker = localCompletion === 2 ? true : false;
     while (aStateChecker) {
-      await animateNodes(visitedNodes[aIndex], "node visited", 10);
+      // await animateNodes(visitedNodes[aIndex], "node visited", 10);
+      let animateNodesBind = animateNodes.bind(this);
+      await animateNodesBind(visitedNodes[aIndex], "node visited", 10);
       aIndex++;
       aStateChecker = this.state.animateState;
       if (aIndex === visitedNodes.length) {
@@ -132,7 +134,9 @@ class Pathfinder extends Component {
     let sIndex = shortestPathIndex;
     let sStateChecker = localCompletion === 3 ? true : false;
     while (sStateChecker) {
-      await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
+      // await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
+      let animateNodesBind = animateNodes.bind(this);
+      await animateNodesBind(shortestPath[sIndex], "node shortest-path", 40);
       sIndex++;
       sStateChecker = this.state.animateState;
       if (sIndex === shortestPath.length) {
@@ -204,11 +208,18 @@ class Pathfinder extends Component {
   };
 
   handleReset = () => {
-    const { animateCompletion } = this.state;
+    const { animateCompletion, visitedNodes } = this.state;
     assert(animateCompletion !== 1);
     this.setState({ animateState: false }); //stops animation
     setTimeout(() => {
       //resets everything
+      for (let nodes of visitedNodes) {
+        for (let node of nodes) {
+          if (!node.isStart && !node.isEnd) {
+            document.getElementById(node.id).className = "node default";
+          }
+        }
+      }
       this.setState({
         animateCompletion: 1,
         algorithmIndex: 0,
@@ -216,6 +227,7 @@ class Pathfinder extends Component {
         visitedNodes: [],
         shortestPath: [],
       });
+      console.log("Terminated");
     }, 11);
   };
 
