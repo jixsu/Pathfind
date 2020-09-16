@@ -1,18 +1,21 @@
 import React, { Component } from "react";
+import Controlbar from "./controlbar";
 import Node from "./node";
+import { dijkstra } from "./../algorithms/dijkstra";
 import "../css/pathfinder.css";
 
 class Pathfinder extends Component {
   state = {
     grid: [],
     start: {
-      x: 20,
-      y: 10,
+      row: 10,
+      column: 20,
     },
     end: {
-      x: 40,
-      y: 10,
+      row: 0,
+      column: 59,
     },
+    algorithm: "dijkstra",
   };
 
   dimensions = {
@@ -26,17 +29,17 @@ class Pathfinder extends Component {
     this.setState({ grid });
   }
 
-  isStart = ({ x, y }) => {
+  isStart = (row, column) => {
     const { start } = this.state;
 
-    if (start.x === x && start.y === y) return true;
+    if (start.row === row && start.column === column) return true;
     return false;
   };
 
-  isEnd = ({ x, y }) => {
+  isEnd = (row, column) => {
     const { end } = this.state;
 
-    if (end.x === x && end.y === y) return true;
+    if (end.row === row && end.column === column) return true;
     return false;
   };
 
@@ -44,15 +47,18 @@ class Pathfinder extends Component {
     let grid = [];
 
     for (let r = 0; r < row; r++) {
-      let row = [];
+      let currentRow = [];
 
       for (let c = 0; c < column; c++) {
-        row.push({
-          key: r.toString() + "-" + c.toString(),
-          coords: { x: c, y: r },
+        currentRow.push({
+          id: r.toString() + "-" + c.toString(),
+          location: { row: r, column: c },
+          weight: 1,
+          isStart: this.isStart(r, c),
+          isEnd: this.isEnd(r, c),
         });
       }
-      grid.push(row);
+      grid.push(currentRow);
     }
 
     return grid;
@@ -70,13 +76,15 @@ class Pathfinder extends Component {
     return grid.map((row, rowIndex) => {
       return (
         <tr className="node-row" key={rowIndex} id={rowIndex}>
-          {row.map((item) => {
+          {row.map((node) => {
             return (
               <Node
-                key={item.key}
-                id={item.key}
-                isStart={this.isStart(item.coords)}
-                isEnd={this.isEnd(item.coords)}
+                key={node.id}
+                id={node.id}
+                location={node.location}
+                weight={node.weight}
+                isStart={node.isStart}
+                isEnd={node.isEnd}
               />
             );
           })}
@@ -85,9 +93,21 @@ class Pathfinder extends Component {
     });
   };
 
+  handleVisualize = () => {
+    const { grid, algorithm } = this.state;
+    if (algorithm === "dijkstra") {
+      return dijkstra(grid);
+    }
+  };
+
   render() {
     const { grid } = this.state;
-    return <div>{this.renderContainer(grid)}</div>;
+    return (
+      <React.Fragment>
+        <Controlbar onVisualize={this.handleVisualize} />
+        <div>{this.renderContainer(grid)}</div>;
+      </React.Fragment>
+    );
   }
 }
 
