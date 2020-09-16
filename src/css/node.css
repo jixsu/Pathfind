@@ -1,5 +1,16 @@
 .node {
-  width: 25px;
-  height: 25px;
-  border: 1px solid black;
+  width: 1.67vw;
+  height: 1.67vw;
+}
+
+.default {
+  border: 1px solid rgb(204, 153, 255);
+}
+
+.start {
+  background-color: purple;
+}
+
+.end {
+  background-color: black;
 }

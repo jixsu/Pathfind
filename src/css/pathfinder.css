@@ -1,9 +1,11 @@
-.node-grid {
-  /* display: flex;
-  flex-wrap: wrap; */
-}
+/* .node-grid {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+} */
 
-.node-row {
+/* .node-row {
   display: flex;
   flex-wrap: wrap;
-}
+} */

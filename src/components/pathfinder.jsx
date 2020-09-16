@@ -5,9 +5,18 @@ import "../css/pathfinder.css";
 class Pathfinder extends Component {
   state = {
     grid: [],
+    start: {
+      x: 20,
+      y: 10,
+    },
+    end: {
+      x: 40,
+      y: 10,
+    },
   };
 
   dimensions = {
+    //if these values are to be modified, change node.css dimensions to match
     row: 25,
     column: 60,
   };
@@ -17,6 +26,20 @@ class Pathfinder extends Component {
     this.setState({ grid });
   }
 
+  isStart = ({ x, y }) => {
+    const { start } = this.state;
+
+    if (start.x === x && start.y === y) return true;
+    return false;
+  };
+
+  isEnd = ({ x, y }) => {
+    const { end } = this.state;
+
+    if (end.x === x && end.y === y) return true;
+    return false;
+  };
+
   generateGrid({ row, column }) {
     let grid = [];
 
@@ -24,7 +47,10 @@ class Pathfinder extends Component {
       let row = [];
 
       for (let c = 0; c < column; c++) {
-        row.push({ key: r.toString() + c.toString() });
+        row.push({
+          key: r.toString() + "-" + c.toString(),
+          coords: { x: c, y: r },
+        });
       }
       grid.push(row);
     }
@@ -33,17 +59,28 @@ class Pathfinder extends Component {
   }
 
   renderContainer = (grid) => {
-    return <div className="node-grid">{this.renderNodes(grid)}</div>;
+    return (
+      <table className="node-grid">
+        <tbody>{this.renderNodes(grid)}</tbody>
+      </table>
+    );
   };
 
   renderNodes = (grid) => {
     return grid.map((row, rowIndex) => {
       return (
-        <div className="node-row" key={rowIndex}>
+        <tr className="node-row" key={rowIndex} id={rowIndex}>
           {row.map((item) => {
-            return <Node key={item.key} />;
+            return (
+              <Node
+                key={item.key}
+                id={item.key}
+                isStart={this.isStart(item.coords)}
+                isEnd={this.isEnd(item.coords)}
+              />
+            );
           })}
-        </div>
+        </tr>
       );
     });
   };
