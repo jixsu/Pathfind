@@ -280,7 +280,7 @@ class Pathfinder extends Component {
       node.isCheckpoint = !node.isCheckpoint;
     }
 
-    newGridnewGrid[indexArray[0]][indexArray[1]] = node;
+    newGrid[indexArray[0]][indexArray[1]] = node;
     this.setState({ grid: newGrid });
   };
 
