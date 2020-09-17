@@ -1,4 +1,3 @@
-import { ReactDOM } from "react-dom";
 // export function animateDijkstra(visitedNodes) {
 //   return new Promise((resolve, reject) => {
 //     for (let n = 0; n < visitedNodes.length; n++) {

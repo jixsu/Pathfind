@@ -134,6 +134,7 @@ export function dijkstra(grid) {
     shortestPath.unshift([{ id: currentNode.id }]);
     currentNode = currentNode.prevNode;
   }
+  shortestPath.unshift([{ id: currentNode.id }]);
 
   // console.log(shortestPath);
   // console.log(visitedNodes);

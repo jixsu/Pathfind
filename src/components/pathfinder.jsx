@@ -29,7 +29,7 @@ class Pathfinder extends Component {
 
   dimensions = {
     //if these values are to be modified, change node.css dimensions to match
-    row: 25,
+    row: 21,
     column: 60,
   };
 
@@ -215,7 +215,11 @@ class Pathfinder extends Component {
       //resets everything
       for (let nodes of visitedNodes) {
         for (let node of nodes) {
-          if (!node.isStart && !node.isEnd) {
+          if (node.isStart) {
+            document.getElementById(node.id).className = "node start";
+          } else if (node.isEnd) {
+            document.getElementById(node.id).className = "node end";
+          } else {
             document.getElementById(node.id).className = "node default";
           }
         }

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Icon } from "semantic-ui-react";
 import "../css/node.css";
 
 class Node extends Component {
@@ -12,8 +13,13 @@ class Node extends Component {
   };
 
   render() {
-    const { id } = this.props;
-    return <td className={this.handleClass()} id={id}></td>;
+    const { id, isStart, isEnd } = this.props;
+    return (
+      <td className={this.handleClass()} id={id}>
+        {isStart && <Icon name="play circle" id="start" />}
+        {isEnd && <Icon name="stop circle" id="end" />}
+      </td>
+    );
   }
 }
 
