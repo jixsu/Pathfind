@@ -38,6 +38,18 @@ begin: rgba(0, 0, 66, 0.75)
   height: 100%;
   width: 100%;
 }
+
+.barrier {
+  background-color: rgb(44, 44, 44);
+}
+
+.weight {
+  background-color: rgb(255, 109, 109);
+}
+
+.checkpoint {
+  background-color: rgb(72, 255, 87);
+}
 /* .start {
   background-color: rgb(238, 248, 94);
 }

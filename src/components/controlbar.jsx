@@ -35,6 +35,7 @@ class Controlbar extends Component {
     for (const algorithm of algorithms) {
       algorithmsArray.push(
         <Button
+          key={algorithm}
           className="dropdown-item"
           onClick={() => onAlgorithmSelect(algorithm)}
         >
@@ -81,6 +82,7 @@ class Controlbar extends Component {
   };
 
   renderAddons = () => {
+    const { onAddonSelect } = this.props;
     return (
       <React.Fragment>
         <li className="nav-item">
@@ -90,9 +92,11 @@ class Controlbar extends Component {
         </li>
         <li className="nav-item">
           <Button.Group>
-            <Button>Weighted</Button>
-            <Button>Checkpoint</Button>
-            <Button>Barrier</Button>
+            <Button onClick={() => onAddonSelect("barriers")}>Barrier</Button>
+            <Button onClick={() => onAddonSelect("weights")}>Weighted</Button>
+            <Button onClick={() => onAddonSelect("checkpoints")}>
+              Checkpoint
+            </Button>
           </Button.Group>
         </li>
       </React.Fragment>
