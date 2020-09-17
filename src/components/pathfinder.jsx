@@ -19,12 +19,16 @@ class Pathfinder extends Component {
       column: 40,
     },
     algorithm: "dijkstra",
+    algorithms: ["dijkstra", "algorithm 1", "algorithm 2", "algorithm 3"],
     animateState: false,
     animateCompletion: 1, //1 for not started, 2 for algorithm animated started, 3 for shortestpath started, 4 for completed
     visitedNodes: [],
     shortestPath: [],
     algorithmIndex: 0,
     shortestPathIndex: 0,
+    barriers: [],
+    checkpoints: [],
+    weightedNodes: [],
   };
 
   dimensions = {
@@ -65,6 +69,9 @@ class Pathfinder extends Component {
           weight: 1,
           isStart: this.isStart(r, c),
           isEnd: this.isEnd(r, c),
+          isBarrier: false,
+          isCheckpoint: false,
+          isWeighted: false,
         });
       }
       grid.push(currentRow);
@@ -94,6 +101,9 @@ class Pathfinder extends Component {
                 weight={node.weight}
                 isStart={node.isStart}
                 isEnd={node.isEnd}
+                isBarrier={node.isBarrier}
+                isCheckpoint={node.isCheckpoint}
+                isWeighted={node.isWeighted}
               />
             );
           })}
@@ -209,7 +219,8 @@ class Pathfinder extends Component {
 
   handleReset = () => {
     const { animateCompletion, visitedNodes } = this.state;
-    assert(animateCompletion !== 1);
+
+    // assert(animateCompletion !== 1);
     this.setState({ animateState: false }); //stops animation
     setTimeout(() => {
       //resets everything
@@ -235,8 +246,19 @@ class Pathfinder extends Component {
     }, 11);
   };
 
+  handleAlgorithmSelect = (algorithm) => {
+    this.setState({ algorithm });
+    this.handleReset();
+  };
+
   render() {
-    const { grid, animateState, animateCompletion } = this.state;
+    const {
+      grid,
+      animateState,
+      animateCompletion,
+      algorithm,
+      algorithms,
+    } = this.state;
     return (
       <React.Fragment>
         <Controlbar
@@ -245,6 +267,9 @@ class Pathfinder extends Component {
           onReset={this.handleReset}
           animateState={animateState}
           animateCompletion={animateCompletion}
+          algorithm={algorithm}
+          algorithms={algorithms.filter((a) => a !== algorithm)}
+          onAlgorithmSelect={this.handleAlgorithmSelect}
         />
         <div>{this.renderContainer(grid)}</div>
       </React.Fragment>
