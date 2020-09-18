@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Controlbar from "./controlbar";
 import Node from "./node";
-import { dijkstra } from "./../algorithms/dijkstra";
+import { dijkstra, dijkstraCheckpoints } from "./../algorithms/dijkstra";
 import { animateNodes } from "../algorithms/animate";
 import "../css/pathfinder.css";
 
@@ -118,8 +118,17 @@ class Pathfinder extends Component {
     });
   };
 
-  runAlgorithm = (algorithm, grid) => {
-    if (algorithm === "dijkstra") return dijkstra(grid);
+  runAlgorithm = (algorithm, grid, checkpoints) => {
+    if (algorithm === "dijkstra") {
+      if (checkpoints.length === 0) {
+        return dijkstra(grid);
+      } else {
+        return dijkstraCheckpoints(grid, checkpoints);
+      }
+      // console.log(dijkstraCheckpoints(grid, checkpoints));
+      // return dijkstraCheckpoints(grid, checkpoints);
+      // return dijkstra(grid);
+    }
   };
 
   animateAlgorithms = async (
@@ -177,12 +186,20 @@ class Pathfinder extends Component {
       algorithm,
       shortestPathIndex,
       algorithmIndex,
+      checkpoints,
     } = this.state;
     assert(animateState === false && animateCompletion === 1);
     this.setState({ animateState: true, animateCompletion: 2 });
 
-    const { shortestPath, visitedNodes } = this.runAlgorithm(algorithm, grid);
+    const { shortestPath, visitedNodes } = this.runAlgorithm(
+      algorithm,
+      grid,
+      checkpoints
+    );
+    console.log(grid[10][28]);
     this.setState({ shortestPath, visitedNodes });
+
+    console.log(grid[10][28]);
 
     console.log("Initiating");
 
@@ -268,7 +285,7 @@ class Pathfinder extends Component {
   };
 
   toggleNode = (button, nodeId) => {
-    const { grid, selectedAddon, selectedWeight } = this.state;
+    const { grid, selectedAddon, selectedWeight, checkpoints } = this.state;
     let newGrid = grid;
 
     const preIndex = nodeId.split("-");
@@ -277,6 +294,8 @@ class Pathfinder extends Component {
       indexArray.push(parseInt(element));
     }
     let node = newGrid[indexArray[0]][indexArray[1]];
+
+    let newCheckpoints = checkpoints;
     if (button === 0) {
       if (selectedAddon === "barriers") {
         if (!node.isCheckpoint && !node.isWeight) node.isBarrier = true;
@@ -286,17 +305,26 @@ class Pathfinder extends Component {
           node.weight = selectedWeight;
         }
       } else if (selectedAddon === "checkpoints") {
-        if (!node.isBarrier && !node.isWeight) node.isCheckpoint = true;
+        if (!node.isBarrier && !node.isWeight) {
+          newCheckpoints.push(node);
+          node.isCheckpoint = true;
+        }
       }
     } else if (button === 2) {
       node.isBarrier = false;
       node.isCheckpoint = false;
+      const index = checkpoints.findIndex(
+        (checkpoint) => checkpoint.id === node.id
+      );
+      if (index !== -1) {
+        newCheckpoints.splice(index, 1);
+      }
       node.isWeight = false;
       node.weight = 1;
     }
 
     newGrid[indexArray[0]][indexArray[1]] = node;
-    this.setState({ grid: newGrid });
+    this.setState({ grid: newGrid, checkpoints: newCheckpoints });
   };
 
   handleMouseDown = (e, nodeId) => {

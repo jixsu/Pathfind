@@ -31,7 +31,7 @@ class Node extends Component {
         onMouseDown={(e) => onMouseDown(e, id)}
         onMouseUp={(e) => onMouseUp()}
         onMouseEnter={(e) => onMouseEnter(id)}
-        onContextMenu={(e) => e.preventDefault()}
+        // onContextMenu={(e) => e.preventDefault()}
       >
         {isStart && <Icon name="play circle" id="start" />}
         {isEnd && <Icon name="stop circle" id="end" />}
