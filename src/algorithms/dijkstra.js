@@ -1,6 +1,17 @@
 function mapGrid(grid) {
   return grid.map((row) => {
     return row.map((node) => {
+      if (node.isBarrier) {
+        return {
+          ...node,
+          visited: true,
+          distanceToStart: node.isStart ? 0 : Infinity,
+          prevNode: {
+            row: NaN,
+            column: NaN,
+          },
+        };
+      }
       return {
         ...node,
         visited: false,

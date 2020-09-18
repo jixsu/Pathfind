@@ -30,7 +30,8 @@ class Pathfinder extends Component {
     checkpoints: [],
     weights: [],
     selectedAddon: "barriers",
-    mouseDown: false,
+    selectedWeight: 5,
+    mouse: { down: false, button: NaN },
   };
 
   dimensions = {
@@ -235,6 +236,12 @@ class Pathfinder extends Component {
             document.getElementById(node.id).className = "node start";
           } else if (node.isEnd) {
             document.getElementById(node.id).className = "node end";
+          } else if (node.isBarrier) {
+            document.getElementById(node.id).className = "node barrier";
+          } else if (node.isCheckpoint) {
+            document.getElementById(node.id).className = "node checkpoint";
+          } else if (node.isWeight) {
+            document.getElementById(node.id).className = "node weight";
           } else {
             document.getElementById(node.id).className = "node default";
           }
@@ -260,49 +267,59 @@ class Pathfinder extends Component {
     this.setState({ selectedAddon: addon });
   };
 
-  toggleNode = (nodeId) => {
-    const { grid, selectedAddon } = this.state;
+  toggleNode = (button, nodeId) => {
+    const { grid, selectedAddon, selectedWeight } = this.state;
     let newGrid = grid;
 
     const preIndex = nodeId.split("-");
     let indexArray = [];
-    let node = newGrid[indexArray[0]][indexArray[1]];
-
     for (const element of preIndex) {
       indexArray.push(parseInt(element));
     }
-
-    if (selectedAddon === "barriers") {
-      node.isBarrier = !node.isBarrier;
-    } else if (selectedAddon === "weights") {
-      node.isWeight = !node.isWeight;
-    } else if (selectedAddon === "checkpoints") {
-      node.isCheckpoint = !node.isCheckpoint;
+    let node = newGrid[indexArray[0]][indexArray[1]];
+    if (button === 0) {
+      if (selectedAddon === "barriers") {
+        if (!node.isCheckpoint && !node.isWeight) node.isBarrier = true;
+      } else if (selectedAddon === "weights") {
+        if (!node.isCheckpoint && !node.isBarrier) {
+          node.isWeight = true;
+          node.weight = selectedWeight;
+        }
+      } else if (selectedAddon === "checkpoints") {
+        if (!node.isBarrier && !node.isWeight) node.isCheckpoint = true;
+      }
+    } else if (button === 2) {
+      node.isBarrier = false;
+      node.isCheckpoint = false;
+      node.isWeight = false;
+      node.weight = 1;
     }
 
     newGrid[indexArray[0]][indexArray[1]] = node;
     this.setState({ grid: newGrid });
   };
 
-  handleMouseDown = (nodeId) => {
+  handleMouseDown = (e, nodeId) => {
     console.log("Mouse down");
-    this.toggleNode(nodeId);
-    this.setState({ mouseDown: true });
+    this.toggleNode(e.button, nodeId);
+    this.setState({ mouse: { down: true, button: e.button } });
   };
 
   handleMouseEnter = (nodeId) => {
-    const { mouseDown } = this.state;
+    const { mouse } = this.state;
 
-    if (mouseDown) {
+    if (mouse.down) {
+      console.log(mouse.button);
+
       console.log("Mouse enter");
-      this.toggleNode(nodeId);
+      this.toggleNode(mouse.button, nodeId);
     }
   };
 
   handleMouseUp = () => {
     console.log("Mouse up");
 
-    this.setState({ mouseDown: false });
+    this.setState({ mouse: { down: false, button: NaN } });
   };
 
   render() {
@@ -312,6 +329,7 @@ class Pathfinder extends Component {
       animateCompletion,
       algorithm,
       algorithms,
+      selectedAddon,
     } = this.state;
     return (
       <React.Fragment>
@@ -325,6 +343,7 @@ class Pathfinder extends Component {
           algorithms={algorithms.filter((a) => a !== algorithm)}
           onAlgorithmSelect={this.handleAlgorithmSelect}
           onAddonSelect={this.handleAddonSelect}
+          selectedAddon={selectedAddon}
         />
         <div>{this.renderContainer(grid)}</div>
       </React.Fragment>

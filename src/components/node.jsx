@@ -28,9 +28,10 @@ class Node extends Component {
       <td
         className={this.handleClass()}
         id={id}
-        onMouseDown={() => onMouseDown(id)}
-        onMouseUp={() => onMouseUp()}
-        onMouseEnter={() => onMouseEnter(id)}
+        onMouseDown={(e) => onMouseDown(e, id)}
+        onMouseUp={(e) => onMouseUp()}
+        onMouseEnter={(e) => onMouseEnter(id)}
+        onContextMenu={(e) => e.preventDefault()}
       >
         {isStart && <Icon name="play circle" id="start" />}
         {isEnd && <Icon name="stop circle" id="end" />}

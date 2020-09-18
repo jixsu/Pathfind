@@ -82,7 +82,7 @@ class Controlbar extends Component {
   };
 
   renderAddons = () => {
-    const { onAddonSelect } = this.props;
+    const { onAddonSelect, selectedAddon } = this.props;
     return (
       <React.Fragment>
         <li className="nav-item">
@@ -92,9 +92,22 @@ class Controlbar extends Component {
         </li>
         <li className="nav-item">
           <Button.Group>
-            <Button onClick={() => onAddonSelect("barriers")}>Barrier</Button>
-            <Button onClick={() => onAddonSelect("weights")}>Weighted</Button>
-            <Button onClick={() => onAddonSelect("checkpoints")}>
+            <Button
+              active={selectedAddon === "barriers"}
+              onClick={() => onAddonSelect("barriers")}
+            >
+              Barrier
+            </Button>
+            <Button
+              active={selectedAddon === "weights"}
+              onClick={() => onAddonSelect("weights")}
+            >
+              Weighted
+            </Button>
+            <Button
+              active={selectedAddon === "checkpoints"}
+              onClick={() => onAddonSelect("checkpoints")}
+            >
               Checkpoint
             </Button>
           </Button.Group>

@@ -1,3 +1,14 @@
+export function animateNodes(currentNodes, style, interval) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      for (const node of currentNodes) {
+        document.getElementById(node.id).className = style;
+      }
+      resolve(true);
+    }, interval);
+  });
+}
+
 // export function animateDijkstra(visitedNodes) {
 //   return new Promise((resolve, reject) => {
 //     for (let n = 0; n < visitedNodes.length; n++) {
@@ -25,14 +36,3 @@
 //     }, 10 * shortestPath.length);
 //   });
 // }
-
-export function animateNodes(currentNodes, style, interval) {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      for (const node of currentNodes) {
-        document.getElementById(node.id).className = style;
-      }
-      resolve(true);
-    }, interval);
-  });
-}
