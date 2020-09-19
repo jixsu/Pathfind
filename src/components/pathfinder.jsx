@@ -85,7 +85,7 @@ class Pathfinder extends Component {
 
   renderContainer = (grid) => {
     return (
-      <table className="node-grid">
+      <table className="node-grid" onMouseLeave={() => this.handleMouseUp()}>
         <tbody>{this.renderNodes(grid)}</tbody>
       </table>
     );
@@ -156,18 +156,21 @@ class Pathfinder extends Component {
       }
     }
 
-    let sIndex = shortestPathIndex;
-    let sStateChecker = localCompletion === 3 ? true : false;
-    while (sStateChecker) {
-      // await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
-      let animateNodesBind = animateNodes.bind(this);
-      await animateNodesBind(shortestPath[sIndex], "node shortest-path", 40);
-      sIndex++;
-      sStateChecker = this.state.animateState;
-      if (sIndex === shortestPath.length) {
-        localCompletion = 4;
-        console.log("Completed");
-        sStateChecker = false;
+    let sIndex = 0;
+    if (shortestPath.length > 0) {
+      sIndex = shortestPathIndex;
+      let sStateChecker = localCompletion === 3 ? true : false;
+      while (sStateChecker) {
+        // await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
+        let animateNodesBind = animateNodes.bind(this);
+        await animateNodesBind(shortestPath[sIndex], "node shortest-path", 40);
+        sIndex++;
+        sStateChecker = this.state.animateState;
+        if (sIndex === shortestPath.length) {
+          localCompletion = 4;
+          console.log("Completed");
+          sStateChecker = false;
+        }
       }
     }
     this.setState({
@@ -196,10 +199,12 @@ class Pathfinder extends Component {
       grid,
       checkpoints
     );
-    console.log(grid[10][28]);
-    this.setState({ shortestPath, visitedNodes });
 
-    console.log(grid[10][28]);
+    if (shortestPath.length === 0) {
+      console.log("No path the destination");
+    }
+
+    this.setState({ shortestPath, visitedNodes });
 
     console.log("Initiating");
 
@@ -241,13 +246,13 @@ class Pathfinder extends Component {
   };
 
   handleReset = () => {
-    const { animateCompletion, visitedNodes } = this.state;
+    const { animateCompletion, grid } = this.state;
 
     // assert(animateCompletion !== 1);
     this.setState({ animateState: false }); //stops animation
     setTimeout(() => {
       //resets everything
-      for (let nodes of visitedNodes) {
+      for (let nodes of grid) {
         for (let node of nodes) {
           if (node.isStart) {
             document.getElementById(node.id).className = "node start";
@@ -328,7 +333,6 @@ class Pathfinder extends Component {
   };
 
   handleMouseDown = (e, nodeId) => {
-    console.log("Mouse down");
     this.toggleNode(e.button, nodeId);
     this.setState({ mouse: { down: true, button: e.button } });
   };
@@ -337,16 +341,11 @@ class Pathfinder extends Component {
     const { mouse } = this.state;
 
     if (mouse.down) {
-      console.log(mouse.button);
-
-      console.log("Mouse enter");
       this.toggleNode(mouse.button, nodeId);
     }
   };
 
   handleMouseUp = () => {
-    console.log("Mouse up");
-
     this.setState({ mouse: { down: false, button: NaN } });
   };
 

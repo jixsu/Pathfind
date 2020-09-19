@@ -96,6 +96,10 @@ export function dijkstra(grid) {
   let currentNode = { isEnd: false };
   while (!currentNode.isEnd) {
     currentNode = findClosestUnvisited(dijkstraGrid);
+    if (currentNode.distanceToStart === Infinity) {
+      return { shortestPath: [], visitedNodes };
+    }
+    console.log(currentNode);
     currentNode.visited = true;
     // console.log(currentNode);
 
@@ -176,12 +180,12 @@ function createNewGrid(grid) {
       newRow.push({
         id: r.toString() + "-" + c.toString(),
         location: { row: r, column: c },
-        weight: 1,
+        weight: grid[r][c].weight,
         isStart: false,
         isEnd: false,
-        isBarrier: false,
+        isBarrier: grid[r][c].isBarrier,
         isCheckpoint: false,
-        isWeight: false,
+        isWeight: grid[r][c].isWeight,
       });
     }
     newGrid.push(newRow);
