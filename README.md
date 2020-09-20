@@ -2,7 +2,7 @@ A pathfinding tool that helps visualize algorithms as they look for the paths to
 
 (important) Only Dijkstra's algorithm is available at the moment, but more algorithms will be added in the future!
 
-The visualization tool can be found here: 
+The visualization tool can be found here: https://jixsu.github.io/Pathfind/
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
