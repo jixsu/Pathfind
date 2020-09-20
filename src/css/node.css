@@ -28,11 +28,25 @@ begin: rgba(0, 0, 66, 0.75)
 }
 
 .start {
+  animation-name: addonAnimation;
+  animation-duration: 0.15s;
+  /* animation-timing-function: ease-out; */
+  animation-delay: 0;
+  animation-direction: forwards;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
   font-size: 1.4vw;
   border: 1px solid rgba(177, 109, 216, 0.507);
 }
 
 .end {
+  animation-name: addonAnimation;
+  animation-duration: 0.15s;
+  /* animation-timing-function: ease-out; */
+  animation-delay: 0;
+  animation-direction: forwards;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
   font-size: 1.4vw;
   border: 1px solid rgba(177, 109, 216, 0.507);
 }

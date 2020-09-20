@@ -141,7 +141,7 @@ export function dijkstra(grid) {
   return { shortestPath, visitedNodes };
 }
 
-function findStart(grid) {
+export function findStart(grid) {
   const dimensions = {
     row: grid.length,
     column: grid[0].length,
@@ -156,7 +156,7 @@ function findStart(grid) {
   }
 }
 
-function findEnd(grid) {
+export function findEnd(grid) {
   const dimensions = {
     row: grid.length,
     column: grid[0].length,

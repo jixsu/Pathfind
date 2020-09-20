@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import Controlbar from "./controlbar";
 import Node from "./node";
-import { dijkstra, dijkstraCheckpoints } from "./../algorithms/dijkstra";
+import {
+  dijkstra,
+  dijkstraCheckpoints,
+  findStart,
+  findEnd,
+} from "../algorithms/dijkstra";
 import { animateNodes } from "../algorithms/animate";
 import { toast } from "react-toastify";
 import "../css/pathfinder.css";
@@ -32,7 +37,7 @@ class Pathfinder extends Component {
     weights: [],
     selectedAddon: "barriers",
     selectedWeight: 5,
-    mouse: { down: false, button: NaN },
+    mouse: { down: false, button: NaN, onStart: false, onEnd: false },
   };
 
   dimensions = {
@@ -310,20 +315,8 @@ class Pathfinder extends Component {
   };
 
   toggleNode = (button, nodeId) => {
-    const {
-      grid,
-      selectedAddon,
-      selectedWeight,
-      checkpoints,
-      animateCompletion,
-    } = this.state;
+    const { grid, selectedAddon, selectedWeight, checkpoints } = this.state;
     let newGrid = grid;
-
-    if (animateCompletion !== 1) {
-      return toast.error(
-        "Please reset or clear the board before making changes!"
-      );
-    }
 
     const preIndex = nodeId.split("-");
     let indexArray = [];
@@ -378,21 +371,129 @@ class Pathfinder extends Component {
     this.setState({ grid: newGrid, checkpoints: newCheckpoints });
   };
 
+  findNodeRef = (nodeId, grid) => {
+    const dimensions = {
+      row: grid.length,
+      column: grid[0].length,
+    };
+
+    for (let r = 0; r < dimensions.row; r++) {
+      for (let c = 0; c < dimensions.column; c++) {
+        if (grid[r][c].id === nodeId) {
+          return { r, c };
+        }
+      }
+    }
+  };
+
+  moveStart = (oldNode, newNode, grid) => {
+    let newNodeClone = newNode;
+    let oldNodeClone = oldNode;
+    let oldNodeRef = this.findNodeRef(oldNode.id, grid);
+    let newNodeRef = this.findNodeRef(newNode.id, grid);
+    let newGrid = grid;
+    if (
+      !(
+        newNode.isBarrier ||
+        newNode.isCheckpoint ||
+        newNode.isWeight ||
+        newNode.isEnd
+      )
+    ) {
+      newNodeClone.isStart = true;
+      oldNodeClone.isStart = false;
+      newGrid[oldNodeRef.r][oldNodeRef.c] = oldNodeClone;
+      newGrid[newNodeRef.r][newNodeRef.c] = newNodeClone;
+    }
+    return { newGrid, newNodeClone };
+  };
+
+  moveEnd = (oldNode, newNode, grid) => {
+    let newNodeClone = newNode;
+    let oldNodeClone = oldNode;
+    let oldNodeRef = this.findNodeRef(oldNode.id, grid);
+    let newNodeRef = this.findNodeRef(newNode.id, grid);
+    let newGrid = grid;
+    if (
+      !(
+        newNode.isBarrier ||
+        newNode.isCheckpoint ||
+        newNode.isWeight ||
+        newNode.isStart
+      )
+    ) {
+      newNodeClone.isEnd = true;
+      oldNodeClone.isEnd = false;
+      newGrid[oldNodeRef.r][oldNodeRef.c] = oldNodeClone;
+      newGrid[newNodeRef.r][newNodeRef.c] = newNodeClone;
+    }
+    return { newGrid, newNodeClone };
+  };
+
   handleMouseDown = (e, nodeId) => {
-    this.toggleNode(e.button, nodeId);
-    this.setState({ mouse: { down: true, button: e.button } });
+    const { animateCompletion } = this.state;
+    if (animateCompletion !== 1) {
+      return toast.error(
+        "Please reset or clear the board before making changes!"
+      );
+    }
+    let mouse = {
+      down: true,
+      button: e.button,
+      onStart: false,
+      onEnd: false,
+    };
+    const { start, end } = this.state;
+    if (nodeId === start.row.toString() + "-" + start.column.toString()) {
+      mouse.onStart = true;
+    } else if (nodeId === end.row.toString() + "-" + end.column.toString()) {
+      mouse.onEnd = true;
+    } else {
+      this.toggleNode(e.button, nodeId);
+    }
+    this.setState({ mouse });
   };
 
   handleMouseEnter = (nodeId) => {
-    const { mouse } = this.state;
+    const { mouse, grid } = this.state;
 
     if (mouse.down) {
-      this.toggleNode(mouse.button, nodeId);
+      if (mouse.onStart) {
+        const newNode = this.findNode(nodeId, grid);
+        const start = findStart(grid);
+        const { newGrid, newNodeClone } = this.moveStart(start, newNode, grid);
+        this.setState({
+          grid: newGrid,
+          start: {
+            row: newNodeClone.location.row,
+            column: newNodeClone.location.column,
+          },
+        });
+      } else if (mouse.onEnd) {
+        const newNode = this.findNode(nodeId, grid);
+        const end = findEnd(grid);
+        const { newGrid, newNodeClone } = this.moveEnd(end, newNode, grid);
+        this.setState({
+          grid: newGrid,
+          end: {
+            row: newNodeClone.location.row,
+            column: newNodeClone.location.column,
+          },
+        });
+      } else {
+        this.toggleNode(mouse.button, nodeId);
+      }
     }
   };
 
   handleMouseUp = () => {
-    this.setState({ mouse: { down: false, button: NaN } });
+    const mouse = {
+      down: false,
+      button: NaN,
+      onStart: false,
+      onEnd: false,
+    };
+    this.setState({ mouse });
   };
 
   render() {
