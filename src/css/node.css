@@ -15,66 +15,107 @@ begin: rgba(0, 0, 66, 0.75)
 .node {
   width: 1.67vw;
   height: 1.67vw;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .default {
   border: 1px solid rgba(177, 109, 216, 0.507);
 }
 
-#start {
-  display: flex;
-  align-items: center;
-  margin: auto;
+.start {
   font-size: 1.4vw;
-  height: 100%;
-  width: 100%;
+  border: 1px solid rgba(177, 109, 216, 0.507);
 }
 
-#end {
-  display: flex;
-  align-items: center;
-  margin: auto;
+.end {
   font-size: 1.4vw;
-  height: 100%;
-  width: 100%;
+  border: 1px solid rgba(177, 109, 216, 0.507);
 }
 
 .barrier {
+  animation-name: addonAnimation;
+  animation-duration: 0.15s;
+  /* animation-timing-function: ease-out; */
+  animation-delay: 0;
+  animation-direction: forwards;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
   background-color: rgb(44, 44, 44);
 }
 
 .weight {
-  background-color: rgb(255, 109, 109);
+  animation-name: addonAnimation;
+  animation-duration: 0.15s;
+  /* animation-timing-function: ease-out; */
+  animation-delay: 0;
+  animation-direction: forwards;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  font-size: 1.4vw;
+  border: 1px solid rgba(177, 109, 216, 0.507);
+  padding-top: 0;
+}
+
+.weight-label {
+  font-size: 1vw;
+  color: white;
+  z-index: 999;
 }
 
 .checkpoint {
-  background-color: rgb(72, 255, 87);
-}
-/* .start {
-  background-color: rgb(238, 248, 94);
-}
-
-.end {
-  background-color: black;
-} */
-
-/* .visited {
-  background-color: #c4a7d7;
-  border: 1px solid white;
+  animation-name: addonAnimation;
+  animation-duration: 0.15s;
+  /* animation-timing-function: ease-out; */
+  animation-delay: 0;
+  animation-direction: forwards;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  font-size: 1.4vw;
+  border: 1px solid rgba(177, 109, 216, 0.507);
+  padding-top: 0;
 }
 
-.shortest-path {
-  background-color: yellow;
-} */
+.checkpoint-label {
+  font-size: 1vw;
+  color: white;
+  z-index: 999;
+}
 
 .visited {
   animation-name: visitedAnimation;
   animation-duration: 1.5s;
+  /* animation-timing-function does cause some lag, remove if necessary*/
   animation-timing-function: ease-out;
   animation-delay: 0;
   animation-direction: forwards;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;
+}
+
+.shortest-path {
+  animation-name: shortestPath;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes addonAnimation {
+  0% {
+    transform: scale(0.6);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes visitedAnimation {
@@ -99,17 +140,6 @@ begin: rgba(0, 0, 66, 0.75)
     background-color: rgb(195, 120, 238);
     border: 1px solid white;
   }
-}
-
-.shortest-path {
-  animation-name: shortestPath;
-  animation-duration: 1.5s;
-  animation-timing-function: ease-out;
-  animation-delay: 0;
-  animation-direction: alternate;
-  animation-iteration-count: 1;
-  animation-fill-mode: forwards;
-  animation-play-state: running;
 }
 
 @keyframes shortestPath {

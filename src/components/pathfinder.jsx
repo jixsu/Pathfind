@@ -3,6 +3,7 @@ import Controlbar from "./controlbar";
 import Node from "./node";
 import { dijkstra, dijkstraCheckpoints } from "./../algorithms/dijkstra";
 import { animateNodes } from "../algorithms/animate";
+import { toast } from "react-toastify";
 import "../css/pathfinder.css";
 
 var assert = require("assert");
@@ -74,6 +75,7 @@ class Pathfinder extends Component {
           isEnd: this.isEnd(r, c),
           isBarrier: false,
           isCheckpoint: false,
+          checkpointNumber: NaN,
           isWeight: false,
         });
       }
@@ -106,6 +108,7 @@ class Pathfinder extends Component {
                 isEnd={node.isEnd}
                 isBarrier={node.isBarrier}
                 isCheckpoint={node.isCheckpoint}
+                checkpointNumber={node.checkpointNumber}
                 isWeight={node.isWeight}
                 onMouseDown={this.handleMouseDown}
                 onMouseUp={this.handleMouseUp}
@@ -147,7 +150,7 @@ class Pathfinder extends Component {
     while (aStateChecker) {
       // await animateNodes(visitedNodes[aIndex], "node visited", 10);
       let animateNodesBind = animateNodes.bind(this);
-      await animateNodesBind(visitedNodes[aIndex], "node visited", 10);
+      await animateNodesBind(visitedNodes[aIndex], "visited", 10);
       aIndex++;
       aStateChecker = this.state.animateState;
       if (aIndex === visitedNodes.length) {
@@ -163,7 +166,7 @@ class Pathfinder extends Component {
       while (sStateChecker) {
         // await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
         let animateNodesBind = animateNodes.bind(this);
-        await animateNodesBind(shortestPath[sIndex], "node shortest-path", 40);
+        await animateNodesBind(shortestPath[sIndex], "shortest-path", 40);
         sIndex++;
         sStateChecker = this.state.animateState;
         if (sIndex === shortestPath.length) {
@@ -199,9 +202,11 @@ class Pathfinder extends Component {
       grid,
       checkpoints
     );
+    // console.log(visitedNodes);
+    // console.log(shortestPath);
 
     if (shortestPath.length === 0) {
-      console.log("No path the destination");
+      toast.error("No path to destination was found...");
     }
 
     this.setState({ shortestPath, visitedNodes });
@@ -289,6 +294,21 @@ class Pathfinder extends Component {
     this.setState({ selectedAddon: addon });
   };
 
+  findNode = (nodeId, grid) => {
+    const dimensions = {
+      row: grid.length,
+      column: grid[0].length,
+    };
+
+    for (let r = 0; r < dimensions.row; r++) {
+      for (let c = 0; c < dimensions.column; c++) {
+        if (grid[r][c].id === nodeId) {
+          return grid[r][c];
+        }
+      }
+    }
+  };
+
   toggleNode = (button, nodeId) => {
     const { grid, selectedAddon, selectedWeight, checkpoints } = this.state;
     let newGrid = grid;
@@ -302,16 +322,21 @@ class Pathfinder extends Component {
 
     let newCheckpoints = checkpoints;
     if (button === 0) {
-      if (selectedAddon === "barriers") {
-        if (!node.isCheckpoint && !node.isWeight) node.isBarrier = true;
-      } else if (selectedAddon === "weights") {
-        if (!node.isCheckpoint && !node.isBarrier) {
+      if (
+        !node.isStart &&
+        !node.isEnd &&
+        !node.isWeight &&
+        !node.isCheckpoint &&
+        !node.isBarrier
+      ) {
+        if (selectedAddon === "barriers") {
+          node.isBarrier = true;
+        } else if (selectedAddon === "weights") {
           node.isWeight = true;
           node.weight = selectedWeight;
-        }
-      } else if (selectedAddon === "checkpoints") {
-        if (!node.isBarrier && !node.isWeight) {
+        } else if (selectedAddon === "checkpoints") {
           newCheckpoints.push(node);
+          node.checkpointNumber = newCheckpoints.length;
           node.isCheckpoint = true;
         }
       }
@@ -323,7 +348,16 @@ class Pathfinder extends Component {
       );
       if (index !== -1) {
         newCheckpoints.splice(index, 1);
+        let cNumber = 1;
+        for (let checkpoint of newCheckpoints) {
+          const checkpointNode = this.findNode(checkpoint.id, newGrid);
+          newGrid[checkpointNode.location.row][
+            checkpointNode.location.column
+          ].checkpointNumber = cNumber;
+          cNumber++;
+        }
       }
+      node.checkpointNumber = NaN;
       node.isWeight = false;
       node.weight = 1;
     }

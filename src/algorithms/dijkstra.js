@@ -99,7 +99,6 @@ export function dijkstra(grid) {
     if (currentNode.distanceToStart === Infinity) {
       return { shortestPath: [], visitedNodes };
     }
-    console.log(currentNode);
     currentNode.visited = true;
     // console.log(currentNode);
 
@@ -208,7 +207,7 @@ export function dijkstraCheckpoints(grid, checkpoints) {
         checkpoints[c].location.column
       ].isEnd = true;
       let { shortestPath: short, visitedNodes: visited } = dijkstra(newGrid);
-      console.log(short);
+      // console.log(short);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
     } else if (c === checkpoints.length) {

@@ -1,5 +1,11 @@
 import React, { Component } from "react";
-import { Icon } from "semantic-ui-react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faWeightHanging,
+  faCircle,
+  faPlayCircle,
+  faStopCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import "../css/node.css";
 
 class Node extends Component {
@@ -20,6 +26,10 @@ class Node extends Component {
       id,
       isStart,
       isEnd,
+      isCheckpoint,
+      checkpointNumber,
+      isWeight,
+      weight,
       onMouseDown,
       onMouseUp,
       onMouseEnter,
@@ -33,8 +43,24 @@ class Node extends Component {
         onMouseEnter={(e) => onMouseEnter(id)}
         // onContextMenu={(e) => e.preventDefault()}
       >
-        {isStart && <Icon name="play circle" id="start" />}
-        {isEnd && <Icon name="stop circle" id="end" />}
+        {isStart && <FontAwesomeIcon icon={faPlayCircle} />}
+        {isEnd && <FontAwesomeIcon icon={faStopCircle} />}
+        {isCheckpoint && (
+          <span className="fa-layers">
+            <span className={"fa-layers-text checkpoint-label"}>
+              {checkpointNumber.toString()}
+            </span>
+            <FontAwesomeIcon icon={faCircle} />
+          </span>
+        )}
+        {isWeight && (
+          <span className="fa-layers">
+            <span className={"fa-layers-text weight-label"}>
+              {weight.toString()}
+            </span>
+            <FontAwesomeIcon icon={faWeightHanging} />
+          </span>
+        )}
       </td>
     );
   }
