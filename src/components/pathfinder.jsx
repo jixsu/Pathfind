@@ -310,8 +310,20 @@ class Pathfinder extends Component {
   };
 
   toggleNode = (button, nodeId) => {
-    const { grid, selectedAddon, selectedWeight, checkpoints } = this.state;
+    const {
+      grid,
+      selectedAddon,
+      selectedWeight,
+      checkpoints,
+      animateCompletion,
+    } = this.state;
     let newGrid = grid;
+
+    if (animateCompletion !== 1) {
+      return toast.error(
+        "Please reset or clear the board before making changes!"
+      );
+    }
 
     const preIndex = nodeId.split("-");
     let indexArray = [];
