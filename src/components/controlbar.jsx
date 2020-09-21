@@ -56,7 +56,6 @@ class Controlbar extends Component {
         <li className="nav-item dropdown">
           <Button
             className="nav-link dropdown-toggle"
-            href="#"
             id="navbarDropdown"
             role="button"
             data-toggle="dropdown"
@@ -78,41 +77,6 @@ class Controlbar extends Component {
           >
             {algorithmsArray}
           </div>
-        </li>
-      </React.Fragment>
-    );
-  };
-
-  renderAddons = () => {
-    const { onAddonSelect, selectedAddon } = this.props;
-    return (
-      <React.Fragment>
-        <li className="nav-item">
-          <p className="nav-link" style={{ color: "black" }}>
-            Add-on Nodes:
-          </p>
-        </li>
-        <li className="nav-item">
-          <Button.Group>
-            <Button
-              active={selectedAddon === "barriers"}
-              onClick={() => onAddonSelect("barriers")}
-            >
-              Barrier
-            </Button>
-            <Button
-              active={selectedAddon === "weights"}
-              onClick={() => onAddonSelect("weights")}
-            >
-              Weighted
-            </Button>
-            <Button
-              active={selectedAddon === "checkpoints"}
-              onClick={() => onAddonSelect("checkpoints")}
-            >
-              Checkpoint
-            </Button>
-          </Button.Group>
         </li>
       </React.Fragment>
     );
@@ -169,6 +133,105 @@ class Controlbar extends Component {
     );
   };
 
+  renderAddons = () => {
+    const { onAddonSelect, selectedAddon } = this.props;
+    return (
+      <React.Fragment>
+        <li className="nav-item">
+          <p className="nav-link" style={{ color: "black" }}>
+            Add-on Nodes:
+          </p>
+        </li>
+        <li className="nav-item">
+          <Button.Group>
+            <Button
+              active={selectedAddon === "barriers"}
+              onClick={() => onAddonSelect("barriers")}
+            >
+              Barrier
+            </Button>
+            <Button
+              active={selectedAddon === "weights"}
+              onClick={() => onAddonSelect("weights")}
+            >
+              Weighted
+            </Button>
+            <Button
+              active={selectedAddon === "checkpoints"}
+              onClick={() => onAddonSelect("checkpoints")}
+            >
+              Checkpoint
+            </Button>
+          </Button.Group>
+        </li>
+      </React.Fragment>
+    );
+  };
+
+  renderClearDropdown = () => {
+    const { onClear, animateCompletion } = this.props;
+    return (
+      <React.Fragment>
+        <li
+          className="nav-item dropdown"
+          style={{ marginLeft: "50px", marginRight: "35px" }}
+        >
+          <Button
+            className="nav-link dropdown-toggle"
+            id="navbarDropdown"
+            role="button"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            color="purple"
+            disabled={animateCompletion !== 1}
+          >
+            Clear
+          </Button>
+          <div
+            className="dropdown-menu dropdown-menu-right"
+            aria-labelledby="navbarDropdown"
+            style={{
+              fontSize: "15px",
+              padding: "0",
+              margin: "0",
+              border: "0px solid black",
+            }}
+          >
+            <Button
+              className="dropdown-item"
+              color="purple"
+              onClick={() => onClear("board")}
+            >
+              Clear Board
+            </Button>
+            <Button
+              className="dropdown-item"
+              color="purple"
+              onClick={() => onClear("barriers")}
+            >
+              Clear Barriers
+            </Button>
+            <Button
+              className="dropdown-item"
+              color="purple"
+              onClick={() => onClear("weights")}
+            >
+              Clear Weights
+            </Button>
+            <Button
+              className="dropdown-item"
+              color="purple"
+              onClick={() => onClear("checkpoints")}
+            >
+              Clear Checkpoints
+            </Button>
+          </div>
+        </li>
+      </React.Fragment>
+    );
+  };
+
   state = {};
   render() {
     return (
@@ -180,6 +243,7 @@ class Controlbar extends Component {
         {this.renderControlButtons()}
         <ul className="navbar-nav" style={{ fontSize: "15px" }}>
           {this.renderAddons()}
+          {this.renderClearDropdown()}
         </ul>
       </nav>
     );

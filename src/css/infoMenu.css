@@ -1,0 +1,60 @@
+.info-menu {
+  margin: 1.5vw;
+}
+
+.legend {
+  display: flex;
+  justify-content: space-around;
+}
+
+.legend-item {
+  align-items: center;
+}
+
+.legend-item-label {
+  margin-left: 5px;
+  font-size: 16px;
+}
+
+.visited-icon {
+  color: rgb(195, 120, 238);
+}
+
+.shortest-path-icon {
+  color: rgba(217, 226, 84, 75);
+}
+
+.barrier-icon {
+  color: rgb(44, 44, 44);
+}
+
+.quick-guide {
+  margin-top: 30px;
+}
+
+.header {
+  text-align: center;
+  color: purple;
+}
+
+.menu-table {
+  width: 100%;
+}
+
+.table-column {
+  width: 50%;
+  text-align: center;
+}
+
+.content-separator {
+  width: 30%;
+  border-top: 1px solid rgba(177, 109, 216, 0.507);
+  margin: auto;
+}
+.list-item {
+  margin: 5px;
+}
+
+.list-item-label {
+  font-size: 16px;
+}

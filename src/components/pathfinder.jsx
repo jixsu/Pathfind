@@ -32,9 +32,7 @@ class Pathfinder extends Component {
     shortestPath: [],
     algorithmIndex: 0,
     shortestPathIndex: 0,
-    barriers: [],
     checkpoints: [],
-    weights: [],
     selectedAddon: "barriers",
     selectedWeight: 5,
     mouse: { down: false, button: NaN, onStart: false, onEnd: false },
@@ -299,6 +297,46 @@ class Pathfinder extends Component {
     this.setState({ selectedAddon: addon });
   };
 
+  clearGridBySelection = (selection, grid) => {
+    let newGrid = grid;
+    for (let row of newGrid) {
+      for (let node of row) {
+        node[selection] = false;
+        if (selection === "isCheckpoint") {
+          node.checkpointNumber = NaN;
+        } else if (selection === "isWeight") {
+          node.weight = 1;
+        }
+        console.log("changed");
+      }
+    }
+    console.log(newGrid);
+    return newGrid;
+  };
+
+  handleClear = (clear) => {
+    const { grid, animateCompletion } = this.state;
+    if (animateCompletion !== 1) {
+      return toast.error(
+        "Please reset or wait for visualization to complete before clearing :)"
+      );
+    }
+    let newGrid = [];
+    if (clear === "board") {
+      newGrid = this.generateGrid(this.dimensions);
+    } else if (clear === "barriers") {
+      newGrid = this.clearGridBySelection("isBarrier", grid);
+    } else if (clear === "weights") {
+      newGrid = this.clearGridBySelection("isWeight", grid);
+    } else if (clear === "checkpoints") {
+      newGrid = this.clearGridBySelection("isCheckpoint", grid);
+      this.setState({ checkpoints: [] });
+    } else {
+      return toast.error("There was an error with clearing your selection :(");
+    }
+    this.setState({ grid: newGrid });
+  };
+
   findNode = (nodeId, grid) => {
     const dimensions = {
       row: grid.length,
@@ -518,6 +556,7 @@ class Pathfinder extends Component {
           onAlgorithmSelect={this.handleAlgorithmSelect}
           onAddonSelect={this.handleAddonSelect}
           selectedAddon={selectedAddon}
+          onClear={this.handleClear}
         />
         <div>{this.renderContainer(grid)}</div>
       </React.Fragment>
