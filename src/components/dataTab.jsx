@@ -8,7 +8,9 @@ class DataTab extends Component {
           <tbody>
             <tr>
               <td>
-                <p style={{ fontWeight: "bold" }}>Dijkstra:</p>
+                <p style={{ fontWeight: "bold", marginRight: "5px" }}>
+                  Dijkstra:
+                </p>
               </td>
               <td>
                 <p>Finds the shortest path, supports weighted nodes</p>
