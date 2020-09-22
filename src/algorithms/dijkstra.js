@@ -1,3 +1,5 @@
+import { findStart, findEnd } from "../utils/nodeFinding";
+
 function mapGrid(grid) {
   return grid.map((row) => {
     return row.map((node) => {
@@ -139,36 +141,6 @@ export function dijkstra(grid) {
   // console.log(visitedNodes);
 
   return { shortestPath, visitedNodes };
-}
-
-export function findStart(grid) {
-  const dimensions = {
-    row: grid.length,
-    column: grid[0].length,
-  };
-
-  for (let r = 0; r < dimensions.row; r++) {
-    for (let c = 0; c < dimensions.column; c++) {
-      if (grid[r][c].isStart) {
-        return grid[r][c];
-      }
-    }
-  }
-}
-
-export function findEnd(grid) {
-  const dimensions = {
-    row: grid.length,
-    column: grid[0].length,
-  };
-
-  for (let r = 0; r < dimensions.row; r++) {
-    for (let c = 0; c < dimensions.column; c++) {
-      if (grid[r][c].isEnd) {
-        return grid[r][c];
-      }
-    }
-  }
 }
 
 function createNewGrid(grid) {

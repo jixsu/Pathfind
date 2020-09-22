@@ -65,51 +65,53 @@ const InfoMenu = () => {
       <div className="quick-guide">
         <h2 className="header">Quick Guide</h2>
         <table className="menu-table">
-          <tr>
-            <td className="table-column">
-              <div className="list-item">
-                <p className="list-item-label">
-                  Select an algorithm along the top left and click visualize!
-                </p>
-                <div className="content-separator" />
-              </div>
+          <tbody>
+            <tr>
+              <td className="table-column">
+                <div className="list-item">
+                  <p className="list-item-label">
+                    Select an algorithm along the top left and click visualize!
+                  </p>
+                  <div className="content-separator" />
+                </div>
 
-              <div className="list-item">
-                <p className="list-item-label">
-                  Select an addon on the top right and left click/drag along the
-                  board to add addons.
-                </p>
-                <div className="content-separator" />
-              </div>
-              <div className="list-item">
-                <p className="list-item-label">
-                  Right click/drag along the board to remove any addons.
-                </p>
-              </div>
-            </td>
-            <td className="table-column">
-              <div className="list-item">
-                <p className="list-item-label">
-                  Click reset to change the board or perform another
-                  visualization.
-                </p>
-                <div className="content-separator" />
-              </div>
-              <div className="list-item">
-                <p className="list-item-label">
-                  Click and drag the start and end nodes to move the starting
-                  and ending points of the visualization.
-                </p>
-                <div className="content-separator" />
-              </div>
-              <div className="list-item">
-                <p className="list-item-label">
-                  While visualizing, changing the board will be disabled. Click
-                  reset to make any changes.
-                </p>
-              </div>
-            </td>
-          </tr>
+                <div className="list-item">
+                  <p className="list-item-label">
+                    Select an addon on the top right and left click/drag along
+                    the board to add addons.
+                  </p>
+                  <div className="content-separator" />
+                </div>
+                <div className="list-item">
+                  <p className="list-item-label">
+                    Right click/drag along the board to remove any addons.
+                  </p>
+                </div>
+              </td>
+              <td className="table-column">
+                <div className="list-item">
+                  <p className="list-item-label">
+                    Click reset to change the board or perform another
+                    visualization.
+                  </p>
+                  <div className="content-separator" />
+                </div>
+                <div className="list-item">
+                  <p className="list-item-label">
+                    Click and drag the start and end nodes to move the starting
+                    and ending points of the visualization.
+                  </p>
+                  <div className="content-separator" />
+                </div>
+                <div className="list-item">
+                  <p className="list-item-label">
+                    While visualizing, changing the board will be disabled.
+                    Click reset to make any changes.
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>

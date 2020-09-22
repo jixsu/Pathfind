@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 import Controlbar from "./controlbar";
 import Node from "./node";
-import {
-  dijkstra,
-  dijkstraCheckpoints,
-  findStart,
-  findEnd,
-} from "../algorithms/dijkstra";
-import { animateNodes } from "../algorithms/animate";
+import { animateNodes } from "../utils/animate";
+import { reset } from "./../utils/reset";
+import { clear } from "./../utils/clear";
+import { mouseDown, mouseEnter } from "./../utils/onMouseChange";
+import { runAlgorithm } from "./../utils/runAlgorithm";
+import { generateGrid } from "../utils/generateGrid";
 import { toast } from "react-toastify";
 import "../css/pathfinder.css";
 
@@ -16,14 +15,6 @@ var assert = require("assert");
 class Pathfinder extends Component {
   state = {
     grid: [],
-    start: {
-      row: 10,
-      column: 20,
-    },
-    end: {
-      row: 10,
-      column: 40,
-    },
     algorithm: "dijkstra",
     algorithms: ["dijkstra", "algorithm 1", "algorithm 2", "algorithm 3"],
     animateState: false,
@@ -44,48 +35,19 @@ class Pathfinder extends Component {
     column: 60,
   };
 
+  start = {
+    row: 10,
+    column: 20,
+  };
+
+  end = {
+    row: 10,
+    column: 40,
+  };
+
   componentDidMount() {
-    const grid = this.generateGrid(this.dimensions);
+    const grid = generateGrid(this.dimensions, this.start, this.end);
     this.setState({ grid });
-  }
-
-  isStart = (row, column) => {
-    const { start } = this.state;
-
-    if (start.row === row && start.column === column) return true;
-    return false;
-  };
-
-  isEnd = (row, column) => {
-    const { end } = this.state;
-
-    if (end.row === row && end.column === column) return true;
-    return false;
-  };
-
-  generateGrid({ row, column }) {
-    let grid = [];
-
-    for (let r = 0; r < row; r++) {
-      let currentRow = [];
-
-      for (let c = 0; c < column; c++) {
-        currentRow.push({
-          id: r.toString() + "-" + c.toString(),
-          location: { row: r, column: c },
-          weight: 1,
-          isStart: this.isStart(r, c),
-          isEnd: this.isEnd(r, c),
-          isBarrier: false,
-          isCheckpoint: false,
-          checkpointNumber: NaN,
-          isWeight: false,
-        });
-      }
-      grid.push(currentRow);
-    }
-
-    return grid;
   }
 
   renderContainer = (grid) => {
@@ -124,19 +86,6 @@ class Pathfinder extends Component {
     });
   };
 
-  runAlgorithm = (algorithm, grid, checkpoints) => {
-    if (algorithm === "dijkstra") {
-      if (checkpoints.length === 0) {
-        return dijkstra(grid);
-      } else {
-        return dijkstraCheckpoints(grid, checkpoints);
-      }
-      // console.log(dijkstraCheckpoints(grid, checkpoints));
-      // return dijkstraCheckpoints(grid, checkpoints);
-      // return dijkstra(grid);
-    }
-  };
-
   animateAlgorithms = async (
     animateCompletion,
     visitedNodes,
@@ -151,7 +100,6 @@ class Pathfinder extends Component {
     let aIndex = algorithmIndex;
     let aStateChecker = localCompletion === 2 ? true : false;
     while (aStateChecker) {
-      // await animateNodes(visitedNodes[aIndex], "node visited", 10);
       let animateNodesBind = animateNodes.bind(this);
       await animateNodesBind(visitedNodes[aIndex], "visited", 10);
       aIndex++;
@@ -167,7 +115,6 @@ class Pathfinder extends Component {
       sIndex = shortestPathIndex;
       let sStateChecker = localCompletion === 3 ? true : false;
       while (sStateChecker) {
-        // await animateNodes(shortestPath[sIndex], "node shortest-path", 40);
         let animateNodesBind = animateNodes.bind(this);
         await animateNodesBind(shortestPath[sIndex], "shortest-path", 40);
         sIndex++;
@@ -200,22 +147,19 @@ class Pathfinder extends Component {
     assert(animateState === false && animateCompletion === 1);
     this.setState({ animateState: true, animateCompletion: 2 });
 
-    const { shortestPath, visitedNodes } = this.runAlgorithm(
+    const { shortestPath, visitedNodes } = runAlgorithm(
       algorithm,
       grid,
       checkpoints
     );
     // console.log(visitedNodes);
     // console.log(shortestPath);
-
     if (shortestPath.length === 0) {
       toast.error("No path to destination was found...");
     }
 
     this.setState({ shortestPath, visitedNodes });
-
     console.log("Initiating");
-
     await this.animateAlgorithms(
       2,
       visitedNodes,
@@ -254,29 +198,11 @@ class Pathfinder extends Component {
   };
 
   handleReset = () => {
-    const { animateCompletion, grid } = this.state;
-
-    // assert(animateCompletion !== 1);
+    const { grid } = this.state;
     this.setState({ animateState: false }); //stops animation
     setTimeout(() => {
       //resets everything
-      for (let nodes of grid) {
-        for (let node of nodes) {
-          if (node.isStart) {
-            document.getElementById(node.id).className = "node start";
-          } else if (node.isEnd) {
-            document.getElementById(node.id).className = "node end";
-          } else if (node.isBarrier) {
-            document.getElementById(node.id).className = "node barrier";
-          } else if (node.isCheckpoint) {
-            document.getElementById(node.id).className = "node checkpoint";
-          } else if (node.isWeight) {
-            document.getElementById(node.id).className = "node weight";
-          } else {
-            document.getElementById(node.id).className = "node default";
-          }
-        }
-      }
+      reset(grid);
       this.setState({
         animateCompletion: 1,
         algorithmIndex: 0,
@@ -297,230 +223,76 @@ class Pathfinder extends Component {
     this.setState({ selectedAddon: addon });
   };
 
-  clearGridBySelection = (selection, grid) => {
-    let newGrid = grid;
-    for (let row of newGrid) {
-      for (let node of row) {
-        node[selection] = false;
-        if (selection === "isCheckpoint") {
-          node.checkpointNumber = NaN;
-        } else if (selection === "isWeight") {
-          node.weight = 1;
-        }
-        console.log("changed");
-      }
-    }
-    console.log(newGrid);
-    return newGrid;
-  };
-
-  handleClear = (clear) => {
+  handleClear = (clearSelection) => {
     const { grid, animateCompletion } = this.state;
     if (animateCompletion !== 1) {
       return toast.error(
         "Please reset or wait for visualization to complete before clearing :)"
       );
     }
-    let newGrid = [];
-    if (clear === "board") {
-      newGrid = this.generateGrid(this.dimensions);
-    } else if (clear === "barriers") {
-      newGrid = this.clearGridBySelection("isBarrier", grid);
-    } else if (clear === "weights") {
-      newGrid = this.clearGridBySelection("isWeight", grid);
-    } else if (clear === "checkpoints") {
-      newGrid = this.clearGridBySelection("isCheckpoint", grid);
+    const newGrid = clear(clearSelection, grid);
+
+    if (clearSelection === "checkpoints" || clearSelection === "board") {
       this.setState({ checkpoints: [] });
-    } else {
-      return toast.error("There was an error with clearing your selection :(");
     }
     this.setState({ grid: newGrid });
   };
 
-  findNode = (nodeId, grid) => {
-    const dimensions = {
-      row: grid.length,
-      column: grid[0].length,
-    };
-
-    for (let r = 0; r < dimensions.row; r++) {
-      for (let c = 0; c < dimensions.column; c++) {
-        if (grid[r][c].id === nodeId) {
-          return grid[r][c];
-        }
-      }
-    }
-  };
-
-  toggleNode = (button, nodeId) => {
-    const { grid, selectedAddon, selectedWeight, checkpoints } = this.state;
-    let newGrid = grid;
-
-    const preIndex = nodeId.split("-");
-    let indexArray = [];
-    for (const element of preIndex) {
-      indexArray.push(parseInt(element));
-    }
-    let node = newGrid[indexArray[0]][indexArray[1]];
-
-    let newCheckpoints = checkpoints;
-    if (button === 0) {
-      if (
-        !node.isStart &&
-        !node.isEnd &&
-        !node.isWeight &&
-        !node.isCheckpoint &&
-        !node.isBarrier
-      ) {
-        if (selectedAddon === "barriers") {
-          node.isBarrier = true;
-        } else if (selectedAddon === "weights") {
-          node.isWeight = true;
-          node.weight = selectedWeight;
-        } else if (selectedAddon === "checkpoints") {
-          newCheckpoints.push(node);
-          node.checkpointNumber = newCheckpoints.length;
-          node.isCheckpoint = true;
-        }
-      }
-    } else if (button === 2) {
-      node.isBarrier = false;
-      node.isCheckpoint = false;
-      const index = checkpoints.findIndex(
-        (checkpoint) => checkpoint.id === node.id
-      );
-      if (index !== -1) {
-        newCheckpoints.splice(index, 1);
-        let cNumber = 1;
-        for (let checkpoint of newCheckpoints) {
-          const checkpointNode = this.findNode(checkpoint.id, newGrid);
-          newGrid[checkpointNode.location.row][
-            checkpointNode.location.column
-          ].checkpointNumber = cNumber;
-          cNumber++;
-        }
-      }
-      node.checkpointNumber = NaN;
-      node.isWeight = false;
-      node.weight = 1;
-    }
-
-    newGrid[indexArray[0]][indexArray[1]] = node;
-    this.setState({ grid: newGrid, checkpoints: newCheckpoints });
-  };
-
-  findNodeRef = (nodeId, grid) => {
-    const dimensions = {
-      row: grid.length,
-      column: grid[0].length,
-    };
-
-    for (let r = 0; r < dimensions.row; r++) {
-      for (let c = 0; c < dimensions.column; c++) {
-        if (grid[r][c].id === nodeId) {
-          return { r, c };
-        }
-      }
-    }
-  };
-
-  moveStart = (oldNode, newNode, grid) => {
-    let newNodeClone = newNode;
-    let oldNodeClone = oldNode;
-    let oldNodeRef = this.findNodeRef(oldNode.id, grid);
-    let newNodeRef = this.findNodeRef(newNode.id, grid);
-    let newGrid = grid;
-    if (
-      !(
-        newNode.isBarrier ||
-        newNode.isCheckpoint ||
-        newNode.isWeight ||
-        newNode.isEnd
-      )
-    ) {
-      newNodeClone.isStart = true;
-      oldNodeClone.isStart = false;
-      newGrid[oldNodeRef.r][oldNodeRef.c] = oldNodeClone;
-      newGrid[newNodeRef.r][newNodeRef.c] = newNodeClone;
-    }
-    return { newGrid, newNodeClone };
-  };
-
-  moveEnd = (oldNode, newNode, grid) => {
-    let newNodeClone = newNode;
-    let oldNodeClone = oldNode;
-    let oldNodeRef = this.findNodeRef(oldNode.id, grid);
-    let newNodeRef = this.findNodeRef(newNode.id, grid);
-    let newGrid = grid;
-    if (
-      !(
-        newNode.isBarrier ||
-        newNode.isCheckpoint ||
-        newNode.isWeight ||
-        newNode.isStart
-      )
-    ) {
-      newNodeClone.isEnd = true;
-      oldNodeClone.isEnd = false;
-      newGrid[oldNodeRef.r][oldNodeRef.c] = oldNodeClone;
-      newGrid[newNodeRef.r][newNodeRef.c] = newNodeClone;
-    }
-    return { newGrid, newNodeClone };
-  };
-
   handleMouseDown = (e, nodeId) => {
-    const { animateCompletion } = this.state;
+    const {
+      animateCompletion,
+      grid,
+      selectedAddon,
+      selectedWeight,
+      checkpoints,
+    } = this.state;
     if (animateCompletion !== 1) {
       return toast.error(
         "Please reset or clear the board before making changes!"
       );
     }
-    let mouse = {
-      down: true,
-      button: e.button,
-      onStart: false,
-      onEnd: false,
-    };
-    const { start, end } = this.state;
-    if (nodeId === start.row.toString() + "-" + start.column.toString()) {
-      mouse.onStart = true;
-    } else if (nodeId === end.row.toString() + "-" + end.column.toString()) {
-      mouse.onEnd = true;
-    } else {
-      this.toggleNode(e.button, nodeId);
+    const { newGrid, newCheckpoints, mouse } = mouseDown(
+      e,
+      nodeId,
+      grid,
+      selectedAddon,
+      selectedWeight,
+      checkpoints
+    );
+    if (newGrid !== null && newCheckpoints !== null) {
+      this.setState({ grid: newGrid, checkpoints: newCheckpoints });
     }
     this.setState({ mouse });
   };
 
   handleMouseEnter = (nodeId) => {
-    const { mouse, grid } = this.state;
-
+    const {
+      mouse,
+      grid,
+      selectedAddon,
+      selectedWeight,
+      checkpoints,
+    } = this.state;
     if (mouse.down) {
-      if (mouse.onStart) {
-        const newNode = this.findNode(nodeId, grid);
-        const start = findStart(grid);
-        const { newGrid, newNodeClone } = this.moveStart(start, newNode, grid);
+      const { newGrid, newNodeClone, changedNode, newCheckpoints } = mouseEnter(
+        nodeId,
+        mouse,
+        grid,
+        selectedAddon,
+        selectedWeight,
+        checkpoints
+      );
+      if (mouse.onStart || mouse.onEnd) {
         this.setState({
-          grid: newGrid,
-          start: {
-            row: newNodeClone.location.row,
-            column: newNodeClone.location.column,
-          },
-        });
-      } else if (mouse.onEnd) {
-        const newNode = this.findNode(nodeId, grid);
-        const end = findEnd(grid);
-        const { newGrid, newNodeClone } = this.moveEnd(end, newNode, grid);
-        this.setState({
-          grid: newGrid,
-          end: {
+          [changedNode]: {
             row: newNodeClone.location.row,
             column: newNodeClone.location.column,
           },
         });
       } else {
-        this.toggleNode(mouse.button, nodeId);
+        this.setState({ checkpoints: newCheckpoints });
       }
+      this.setState({ grid: newGrid });
     }
   };
 
