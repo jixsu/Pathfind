@@ -12,6 +12,7 @@ import "../css/infoMenu.css";
 const InfoMenu = () => {
   return (
     <div className="info-menu">
+      <div className="content-separator-2" style={{ marginBottom: "25px" }} />
       <div className="legend">
         <div className="legend legend-item">
           <FontAwesomeIcon icon={faPlayCircle} size="2x" />
@@ -62,6 +63,7 @@ const InfoMenu = () => {
           <p className="legend-item-label">Shortest Path</p>
         </div>
       </div>
+      <div className="content-separator-2" style={{ marginTop: "25px" }} />
       <div className="quick-guide">
         <h2 className="header">Quick Guide</h2>
         <table className="menu-table">

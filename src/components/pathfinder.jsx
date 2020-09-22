@@ -9,6 +9,7 @@ import { runAlgorithm } from "./../utils/runAlgorithm";
 import { generateGrid } from "../utils/generateGrid";
 import { toast } from "react-toastify";
 import "../css/pathfinder.css";
+import DataTab from "./dataTab";
 
 var assert = require("assert");
 
@@ -21,6 +22,7 @@ class Pathfinder extends Component {
     animateCompletion: 1, //1 for not started, 2 for algorithm animated started, 3 for shortestpath started, 4 for completed
     visitedNodes: [],
     shortestPath: [],
+    shortestDistance: 0,
     algorithmIndex: 0,
     shortestPathIndex: 0,
     checkpoints: [],
@@ -147,7 +149,7 @@ class Pathfinder extends Component {
     assert(animateState === false && animateCompletion === 1);
     this.setState({ animateState: true, animateCompletion: 2 });
 
-    const { shortestPath, visitedNodes } = runAlgorithm(
+    const { shortestPath, visitedNodes, shortestDistance } = runAlgorithm(
       algorithm,
       grid,
       checkpoints
@@ -158,7 +160,7 @@ class Pathfinder extends Component {
       toast.error("No path to destination was found...");
     }
 
-    this.setState({ shortestPath, visitedNodes });
+    this.setState({ shortestPath, visitedNodes, shortestDistance });
     console.log("Initiating");
     await this.animateAlgorithms(
       2,
@@ -209,6 +211,7 @@ class Pathfinder extends Component {
         shortestPathIndex: 0,
         visitedNodes: [],
         shortestPath: [],
+        shortestDistance: 0,
       });
       console.log("Terminated");
     }, 11);
@@ -222,6 +225,11 @@ class Pathfinder extends Component {
   handleAddonSelect = (addon) => {
     this.setState({ selectedAddon: addon });
   };
+
+  handleWeightSelect = (e, { value }) => {
+    this.setState({ selectedWeight: value});
+  }
+
 
   handleClear = (clearSelection) => {
     const { grid, animateCompletion } = this.state;
@@ -314,6 +322,8 @@ class Pathfinder extends Component {
       algorithm,
       algorithms,
       selectedAddon,
+      shortestDistance,
+      selectedWeight,
     } = this.state;
     return (
       <React.Fragment>
@@ -329,8 +339,15 @@ class Pathfinder extends Component {
           onAddonSelect={this.handleAddonSelect}
           selectedAddon={selectedAddon}
           onClear={this.handleClear}
+          weight={selectedWeight}
+          onWeightSelect={this.handleWeightSelect}
         />
         <div>{this.renderContainer(grid)}</div>
+        <DataTab
+          shortestDistance={shortestDistance}
+          animateCompletion={animateCompletion}
+          algorithm={algorithm}
+        />
       </React.Fragment>
     );
   }

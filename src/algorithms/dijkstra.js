@@ -1,4 +1,5 @@
 import { findStart, findEnd } from "../utils/nodeFinding";
+import { createNewGrid } from "../utils/generateGrid";
 
 function mapGrid(grid) {
   return grid.map((row) => {
@@ -96,6 +97,7 @@ export function dijkstra(grid) {
 
   let visitedNodes = [];
   let currentNode = { isEnd: false };
+  let shortestDistance = 0;
   while (!currentNode.isEnd) {
     currentNode = findClosestUnvisited(dijkstraGrid);
     if (currentNode.distanceToStart === Infinity) {
@@ -130,6 +132,7 @@ export function dijkstra(grid) {
   // const endNode = currentNode;
 
   let shortestPath = [];
+  shortestDistance = currentNode.distanceToStart;
 
   while (!currentNode.isStart) {
     shortestPath.unshift([{ id: currentNode.id }]);
@@ -140,28 +143,7 @@ export function dijkstra(grid) {
   // console.log(shortestPath);
   // console.log(visitedNodes);
 
-  return { shortestPath, visitedNodes };
-}
-
-function createNewGrid(grid) {
-  let newGrid = [];
-  for (let r = 0; r < grid.length; r++) {
-    let newRow = [];
-    for (let c = 0; c < grid[0].length; c++) {
-      newRow.push({
-        id: r.toString() + "-" + c.toString(),
-        location: { row: r, column: c },
-        weight: grid[r][c].weight,
-        isStart: false,
-        isEnd: false,
-        isBarrier: grid[r][c].isBarrier,
-        isCheckpoint: false,
-        isWeight: grid[r][c].isWeight,
-      });
-    }
-    newGrid.push(newRow);
-  }
-  return newGrid;
+  return { shortestPath, visitedNodes, shortestDistance };
 }
 
 export function dijkstraCheckpoints(grid, checkpoints) {
@@ -170,6 +152,7 @@ export function dijkstraCheckpoints(grid, checkpoints) {
 
   let shortestPath = [];
   let visitedNodes = [];
+  let shortestDistance = 0;
 
   for (let c = 0; c <= checkpoints.length; c++) {
     const newGrid = createNewGrid(grid);
@@ -178,19 +161,29 @@ export function dijkstraCheckpoints(grid, checkpoints) {
       newGrid[checkpoints[c].location.row][
         checkpoints[c].location.column
       ].isEnd = true;
-      let { shortestPath: short, visitedNodes: visited } = dijkstra(newGrid);
+      let {
+        shortestPath: short,
+        visitedNodes: visited,
+        shortestDistance: distance,
+      } = dijkstra(newGrid);
       // console.log(short);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
+      shortestDistance += distance;
     } else if (c === checkpoints.length) {
       newGrid[checkpoints[c - 1].location.row][
         checkpoints[c - 1].location.column
       ].isStart = true;
       newGrid[end.location.row][end.location.column].isEnd = true;
-      let { shortestPath: short, visitedNodes: visited } = dijkstra(newGrid);
+      let {
+        shortestPath: short,
+        visitedNodes: visited,
+        shortestDistance: distance,
+      } = dijkstra(newGrid);
       short.splice(0, 1);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
+      shortestDistance += distance;
     } else {
       newGrid[checkpoints[c - 1].location.row][
         checkpoints[c - 1].location.column
@@ -198,11 +191,16 @@ export function dijkstraCheckpoints(grid, checkpoints) {
       newGrid[checkpoints[c].location.row][
         checkpoints[c].location.column
       ].isEnd = true;
-      let { shortestPath: short, visitedNodes: visited } = dijkstra(newGrid);
+      let {
+        shortestPath: short,
+        visitedNodes: visited,
+        shortestDistance: distance,
+      } = dijkstra(newGrid);
       short.splice(0, 1);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
+      shortestDistance += distance;
     }
   }
-  return { shortestPath, visitedNodes };
+  return { shortestPath, visitedNodes, shortestDistance };
 }

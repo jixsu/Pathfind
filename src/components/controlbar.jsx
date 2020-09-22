@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Icon } from "semantic-ui-react";
+import { Button, Icon, Dropdown } from "semantic-ui-react";
 
 class Controlbar extends Component {
   renderTitle = () => {
@@ -134,7 +134,18 @@ class Controlbar extends Component {
   };
 
   renderAddons = () => {
-    const { onAddonSelect, selectedAddon } = this.props;
+    const { onAddonSelect, selectedAddon, weight, onWeightSelect } = this.props;
+    const weightOptions = [
+      { key: "weight_2", text: "2", value: 2 },
+      { key: "weight_3", text: "3", value: 3 },
+      { key: "weight_4", text: "4", value: 4 },
+      { key: "weight_5", text: "5", value: 5 },
+      { key: "weight_6", text: "6", value: 6 },
+      { key: "weight_7", text: "7", value: 7 },
+      { key: "weight_8", text: "8", value: 8 },
+      { key: "weight_9", text: "9", value: 9 },
+      { key: "weight_10", text: "10", value: 10 },
+    ];
     return (
       <React.Fragment>
         <li className="nav-item">
@@ -154,8 +165,16 @@ class Controlbar extends Component {
               active={selectedAddon === "weights"}
               onClick={() => onAddonSelect("weights")}
             >
-              Weighted
+              {"Weighted: " + weight}
             </Button>
+            <Dropdown
+              simple
+              className="button icon"
+              direction="left"
+              options={weightOptions}
+              trigger={<></>}
+              onChange={onWeightSelect}
+            ></Dropdown>
             <Button
               active={selectedAddon === "checkpoints"}
               onClick={() => onAddonSelect("checkpoints")}

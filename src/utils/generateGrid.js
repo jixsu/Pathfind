@@ -22,3 +22,24 @@ export function generateGrid({ row, column }, start, end) {
 
   return grid;
 }
+
+export function createNewGrid(grid) {
+  let newGrid = [];
+  for (let r = 0; r < grid.length; r++) {
+    let newRow = [];
+    for (let c = 0; c < grid[0].length; c++) {
+      newRow.push({
+        id: r.toString() + "-" + c.toString(),
+        location: { row: r, column: c },
+        weight: grid[r][c].weight,
+        isStart: false,
+        isEnd: false,
+        isBarrier: grid[r][c].isBarrier,
+        isCheckpoint: false,
+        isWeight: grid[r][c].isWeight,
+      });
+    }
+    newGrid.push(newRow);
+  }
+  return newGrid;
+}

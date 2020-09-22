@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import Pathfinder from "./pathfinder";
+import InfoMenu from "./infoMenu";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../css/App.css";
-import InfoMenu from "./infoMenu";
 
 class App extends Component {
   state = {};
