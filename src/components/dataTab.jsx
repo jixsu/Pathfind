@@ -1,28 +1,38 @@
 import React, { Component } from "react";
 
 class DataTab extends Component {
-  renderAlgorithmData = (algorithm) => {
+  renderAlgorithmDetails = () => {
+    const { algorithm } = this.props;
+    let algorithmTitle = "";
+    let algorithmBody = "";
     if (algorithm === "dijkstra") {
-      return (
-        <table>
-          <tbody>
-            <tr>
-              <td>
-                <p style={{ fontWeight: "bold", marginRight: "5px" }}>
-                  Dijkstra:
-                </p>
-              </td>
-              <td>
-                <p>Finds the shortest path, supports weighted nodes</p>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      );
+      algorithmTitle = "Dijkstra:";
+      algorithmBody = "Finds the shortest path, supports weighted nodes";
+    } else if (algorithm === "a*") {
+      algorithmTitle = "A*";
+      algorithmBody =
+        "Finds the shortest path, supports weighted nodes, improves on Dijkstra's by adding an additional heuristic";
     }
+    return (
+      <table>
+        <tbody>
+          <tr>
+            <td>
+              <p style={{ fontWeight: "bold", marginRight: "5px" }}>
+                {algorithmTitle}
+              </p>
+            </td>
+            <td>
+              <p>{algorithmBody}</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    );
   };
 
-  renderShortestDistance = (shortestDistance, animateCompletion) => {
+  renderShortestDistance = () => {
+    const { shortestDistance, animateCompletion } = this.props;
     const displayDistance =
       animateCompletion === 4 && shortestDistance !== 0
         ? shortestDistance
@@ -35,8 +45,33 @@ class DataTab extends Component {
       </div>
     );
   };
+
+  renderRuntime = () => {
+    const { runtime, animateCompletion } = this.props;
+    const displayRuntime =
+      animateCompletion === 4 && runtime !== 0
+        ? runtime.toString() + "ms"
+        : "N/A";
+    return (
+      <div>
+        <p style={{ fontWeight: "bold" }}>{"Runtime: " + displayRuntime}</p>
+      </div>
+    );
+  };
+
+  renderNodesVisited = () => {
+    const { nodesVisited, animateCompletion } = this.props;
+    const displayNodesVisited =
+      animateCompletion === 4 && nodesVisited !== 0 ? nodesVisited : "N/A";
+    return (
+      <div>
+        <p style={{ fontWeight: "bold" }}>
+          {"Nodes Visited: " + displayNodesVisited}
+        </p>
+      </div>
+    );
+  };
   render() {
-    const { shortestDistance, animateCompletion, algorithm } = this.props;
     return (
       <div
         style={{
@@ -46,10 +81,10 @@ class DataTab extends Component {
           fontSize: "20px",
         }}
       >
-        <div>{this.renderAlgorithmData(algorithm)}</div>
-        <div>
-          {this.renderShortestDistance(shortestDistance, animateCompletion)}
-        </div>
+        <div>{this.renderAlgorithmDetails()}</div>
+        <div>{this.renderShortestDistance()}</div>
+        <div>{this.renderRuntime()}</div>
+        <div>{this.renderNodesVisited()}</div>
       </div>
     );
   }

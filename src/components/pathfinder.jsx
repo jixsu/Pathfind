@@ -23,6 +23,7 @@ class Pathfinder extends Component {
     visitedNodes: [],
     shortestPath: [],
     shortestDistance: 0,
+    runtime: 0,
     algorithmIndex: 0,
     shortestPathIndex: 0,
     checkpoints: [],
@@ -149,18 +150,18 @@ class Pathfinder extends Component {
     assert(animateState === false && animateCompletion === 1);
     this.setState({ animateState: true, animateCompletion: 2 });
 
-    const { shortestPath, visitedNodes, shortestDistance } = runAlgorithm(
-      algorithm,
-      grid,
-      checkpoints
-    );
+    const {
+      shortestPath,
+      visitedNodes,
+      shortestDistance,
+      runtime,
+    } = runAlgorithm(algorithm, grid, checkpoints);
     // console.log(visitedNodes);
     // console.log(shortestPath);
     if (shortestPath.length === 0) {
       toast.error("No path to destination was found...");
     }
-
-    this.setState({ shortestPath, visitedNodes, shortestDistance });
+    this.setState({ shortestPath, visitedNodes, shortestDistance, runtime });
     console.log("Initiating");
     await this.animateAlgorithms(
       2,
@@ -322,6 +323,8 @@ class Pathfinder extends Component {
       algorithms,
       selectedAddon,
       shortestDistance,
+      runtime,
+      visitedNodes,
       selectedWeight,
     } = this.state;
     return (
@@ -344,6 +347,8 @@ class Pathfinder extends Component {
         <div>{this.renderContainer(grid)}</div>
         <DataTab
           shortestDistance={shortestDistance}
+          runtime={runtime}
+          nodesVisited={visitedNodes.length}
           animateCompletion={animateCompletion}
           algorithm={algorithm}
         />

@@ -2,17 +2,22 @@ import { dijkstra, dijkstraCheckpoints } from "./../algorithms/dijkstra";
 import { aStar, aStarCheckpoints } from "../algorithms/aStar";
 
 export function runAlgorithm(algorithm, grid, checkpoints) {
+  const start = performance.now();
+  let result = null;
   if (algorithm === "dijkstra") {
     if (checkpoints.length === 0) {
-      return dijkstra(grid);
+      result = dijkstra(grid);
     } else {
-      return dijkstraCheckpoints(grid, checkpoints);
+      result = dijkstraCheckpoints(grid, checkpoints);
     }
   } else if (algorithm === "a*") {
     if (checkpoints.length === 0) {
-      return aStar(grid);
+      result = aStar(grid);
     } else {
-      return aStarCheckpoints(grid, checkpoints);
+      result = aStarCheckpoints(grid, checkpoints);
     }
   }
+  const end = performance.now();
+  result.runtime = (end - start).toFixed(4);
+  return result;
 }

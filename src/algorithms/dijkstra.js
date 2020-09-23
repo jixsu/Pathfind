@@ -151,7 +151,6 @@ export function dijkstra(grid) {
 
   // console.log(shortestPath);
   // console.log(visitedNodes);
-
   return { shortestPath, visitedNodes, shortestDistance };
 }
 
