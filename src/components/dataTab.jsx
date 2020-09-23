@@ -9,7 +9,7 @@ class DataTab extends Component {
       algorithmTitle = "Dijkstra:";
       algorithmBody = "Finds the shortest path, supports weighted nodes";
     } else if (algorithm === "a*") {
-      algorithmTitle = "A*";
+      algorithmTitle = "A*:";
       algorithmBody =
         "Finds the shortest path, supports weighted nodes, improves on Dijkstra's by adding an additional heuristic";
     }
