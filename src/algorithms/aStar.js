@@ -1,14 +1,21 @@
-import { findStart, findEnd } from "../utils/nodeFinding";
+import { findEnd, findStart } from "../utils/nodeFinding";
 import { createNewGrid } from "../utils/generateGrid";
+function findDistanceToEnd(endId, { row, column }) {
+  let endArray = [];
+  endId.split("-").forEach((item) => endArray.push(parseInt(item)));
+  return Math.abs(row - endArray[0]) + Math.abs(column - endArray[1]);
+}
 
-function mapGrid(grid) {
+function mapGrid(grid, endId) {
   return grid.map((row) => {
     return row.map((node) => {
       if (node.isBarrier) {
         return {
           ...node,
           visited: true,
-          distanceToStart: node.isStart ? 0 : Infinity,
+          distanceToStart: Infinity,
+          distanceToEnd: Infinity,
+          combinedDistance: Infinity,
           prevNode: {
             row: NaN,
             column: NaN,
@@ -19,6 +26,8 @@ function mapGrid(grid) {
         ...node,
         visited: false,
         distanceToStart: node.isStart ? 0 : Infinity,
+        distanceToEnd: findDistanceToEnd(endId, node.location),
+        combinedDistance: node.isStart ? 0 : Infinity,
         prevNode: {
           row: NaN,
           column: NaN,
@@ -29,11 +38,11 @@ function mapGrid(grid) {
 }
 
 function findClosestUnvisited(closestUnvisitedArray) {
-  let closestUnvisited = { distanceToStart: Infinity };
+  let closestUnvisited = { combinedDistance: Infinity };
   let index = 0;
   let closestIndex = 0;
   for (const unvisited of closestUnvisitedArray) {
-    if (unvisited.distanceToStart < closestUnvisited.distanceToStart) {
+    if (unvisited.combinedDistance <= closestUnvisited.combinedDistance) {
       closestUnvisited = unvisited;
       closestIndex = index;
     }
@@ -45,7 +54,7 @@ function findClosestUnvisited(closestUnvisitedArray) {
 
 function findUnvisitedNeighbors(currentNode, grid) {
   let neighbors = [];
-  //current order is up, right, down, left
+  //this order checks up, right, down, left
   if (grid[currentNode.location.row - 1]) {
     if (
       !grid[currentNode.location.row - 1][currentNode.location.column].visited
@@ -85,41 +94,42 @@ function findUnvisitedNeighbors(currentNode, grid) {
   return neighbors;
 }
 
-export function dijkstra(grid) {
-  let dijkstraGrid = mapGrid(grid);
+export function aStar(grid) {
+  const end = findEnd(grid);
+  let aStarGrid = mapGrid(grid, end.id);
 
   let visitedNodes = [];
   let currentNode = { isEnd: false };
   let shortestDistance = 0;
-  let closestUnvisitedArray = [findStart(dijkstraGrid)];
+  let closestUnvisitedArray = [findStart(aStarGrid)];
 
   while (!currentNode.isEnd) {
     const { closestUnvisited, closestIndex } = findClosestUnvisited(
       closestUnvisitedArray
     );
     currentNode = closestUnvisited;
-
-    if (currentNode.distanceToStart === Infinity) {
+    if (currentNode.combinedDistance === Infinity) {
       return { shortestPath: [], visitedNodes };
     }
     currentNode.visited = true;
     closestUnvisitedArray.splice(closestIndex, 1);
-
     // console.log(currentNode);
 
-    const unvisitedNeighbors = findUnvisitedNeighbors(
-      currentNode,
-      dijkstraGrid
-    );
+    const unvisitedNeighbors = findUnvisitedNeighbors(currentNode, aStarGrid);
     // console.log(neighbors);
 
     for (let neighbor of unvisitedNeighbors) {
-      const newDistance = currentNode.distanceToStart + neighbor.weight;
-      if (newDistance < neighbor.distanceToStart) {
-        neighbor.distanceToStart = newDistance;
+      const newDistanceToStart = currentNode.distanceToStart + neighbor.weight;
+      const newCombinedDistance =
+        currentNode.distanceToStart + neighbor.weight + neighbor.distanceToEnd;
+      if (newDistanceToStart < neighbor.distanceToStart) {
+        neighbor.distanceToStart = newDistanceToStart;
+      }
+      if (newCombinedDistance < neighbor.combinedDistance) {
+        neighbor.combinedDistance = newCombinedDistance;
         neighbor.prevNode = currentNode;
       }
-      dijkstraGrid[neighbor.location.row][neighbor.location.column] = neighbor;
+      aStarGrid[neighbor.location.row][neighbor.location.column] = neighbor;
       const index = closestUnvisitedArray.findIndex(
         (entry) => entry.id === neighbor.id
       );
@@ -130,13 +140,13 @@ export function dijkstra(grid) {
       }
     }
 
-    dijkstraGrid[currentNode.location.row][
+    aStarGrid[currentNode.location.row][
       currentNode.location.column
     ] = currentNode;
     visitedNodes.push([{ id: currentNode.id }]);
   }
 
-  // const startNode = findStart(dijkstraGrid);
+  // const startNode = findStart(aStarGrid);
 
   // const endNode = currentNode;
 
@@ -155,7 +165,7 @@ export function dijkstra(grid) {
   return { shortestPath, visitedNodes, shortestDistance };
 }
 
-export function dijkstraCheckpoints(grid, checkpoints) {
+export function aStarCheckpoints(grid, checkpoints) {
   const start = findStart(grid);
   const end = findEnd(grid);
 
@@ -174,7 +184,7 @@ export function dijkstraCheckpoints(grid, checkpoints) {
         shortestPath: short,
         visitedNodes: visited,
         shortestDistance: distance,
-      } = dijkstra(newGrid);
+      } = aStar(newGrid);
       // console.log(short);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
@@ -188,7 +198,7 @@ export function dijkstraCheckpoints(grid, checkpoints) {
         shortestPath: short,
         visitedNodes: visited,
         shortestDistance: distance,
-      } = dijkstra(newGrid);
+      } = aStar(newGrid);
       short.splice(0, 1);
       shortestPath.push(...short);
       visitedNodes.push(...visited);
@@ -204,7 +214,7 @@ export function dijkstraCheckpoints(grid, checkpoints) {
         shortestPath: short,
         visitedNodes: visited,
         shortestDistance: distance,
-      } = dijkstra(newGrid);
+      } = aStar(newGrid);
       short.splice(0, 1);
       shortestPath.push(...short);
       visitedNodes.push(...visited);

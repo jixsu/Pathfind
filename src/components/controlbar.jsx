@@ -39,7 +39,7 @@ class Controlbar extends Component {
           className="dropdown-item"
           onClick={() => onAlgorithmSelect(algorithm)}
           //will remove as algorithms are added\
-          disabled
+          // disabled
         >
           {algorithm.charAt(0).toUpperCase() + algorithm.slice(1)}
         </Button>

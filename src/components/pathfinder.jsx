@@ -17,7 +17,7 @@ class Pathfinder extends Component {
   state = {
     grid: [],
     algorithm: "dijkstra",
-    algorithms: ["dijkstra", "algorithm 1", "algorithm 2", "algorithm 3"],
+    algorithms: ["dijkstra", "a*"],
     animateState: false,
     animateCompletion: 1, //1 for not started, 2 for algorithm animated started, 3 for shortestpath started, 4 for completed
     visitedNodes: [],
@@ -227,9 +227,8 @@ class Pathfinder extends Component {
   };
 
   handleWeightSelect = (e, { value }) => {
-    this.setState({ selectedWeight: value});
-  }
-
+    this.setState({ selectedWeight: value });
+  };
 
   handleClear = (clearSelection) => {
     const { grid, animateCompletion } = this.state;
