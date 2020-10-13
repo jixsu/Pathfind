@@ -8,6 +8,10 @@ import "../css/App.css";
 class App extends Component {
   state = {};
 
+  componentDidMount() {
+    document.title = "Pathfind";
+  }
+
   render() {
     return (
       <React.Fragment>
