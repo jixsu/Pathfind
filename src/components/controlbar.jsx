@@ -134,7 +134,7 @@ class Controlbar extends Component {
   };
 
   renderAddons = () => {
-    const { onAddonSelect, selectedAddon, weight, onWeightSelect } = this.props;
+    const { onAddonSelect, selectedAddon, weight, onWeightSelect, animateCompletion } = this.props;
     const weightOptions = [
       { key: "weight_2", text: "2", value: 2 },
       { key: "weight_3", text: "3", value: 3 },
@@ -174,6 +174,7 @@ class Controlbar extends Component {
               options={weightOptions}
               trigger={<></>}
               onChange={onWeightSelect}
+              disabled={animateCompletion !== 1}
             ></Dropdown>
             <Button
               active={selectedAddon === "checkpoints"}
